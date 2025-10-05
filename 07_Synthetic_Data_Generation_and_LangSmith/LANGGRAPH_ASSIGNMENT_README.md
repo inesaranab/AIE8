@@ -176,5 +176,5 @@ To further enhance this implementation:
 
 ## Author Notes
 
-This implementation demonstrates how LangGraph can be used as an alternative to traditional Knowledge Graph approaches for synthetic data generation. The agent-based architecture provides more flexibility and is easier to extend with new evolution types or validation steps.
+This implementation demonstrates how LangGraph can be used as an alternative to traditional Knowledge Graph approaches for synthetic data generation. The agent-based architecture provides more flexibility and is easier to extend with new evolution types or validation steps. Inés.
 
