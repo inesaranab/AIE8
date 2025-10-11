@@ -8,7 +8,7 @@ from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, Field
 
 
-class SearchAPI(Enum):
+class SearchAPI(Enum): # Fixed set of named constants
     """Enumeration of available search API providers."""
     
     ANTHROPIC = "anthropic"
@@ -228,7 +228,7 @@ class Configuration(BaseModel):
             "x_oap_ui_config": {
                 "type": "text",
                 "description": "Any additional instructions to pass along to the Agent regarding the MCP tools that are available to it."
-            }
+            } 
         }
     )
 
