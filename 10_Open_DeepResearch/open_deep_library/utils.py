@@ -826,6 +826,9 @@ MODEL_TOKEN_LIMITS = {
     "bedrock:us.anthropic.claude-sonnet-4-20250514-v1:0": 200000,
     "bedrock:us.anthropic.claude-opus-4-20250514-v1:0": 200000,
     "anthropic.claude-opus-4-1-20250805-v1:0": 200000,
+    "grok-4-fast-reasoning-latest": 128000,
+    "grok-2": 128000,
+    "grok-1": 128000,
 }
 
 def get_model_token_limit(model_string):
@@ -903,6 +906,8 @@ def get_api_key_for_model(model_name: str, config: RunnableConfig):
             return api_keys.get("ANTHROPIC_API_KEY")
         elif model_name.startswith("google"):
             return api_keys.get("GOOGLE_API_KEY")
+        elif model_name.startswith("grok") or model_name.startswith("xai:"):
+            return api_keys.get("XAI_API_KEY")
         return None
     else:
         if model_name.startswith("openai:"): 
@@ -911,6 +916,8 @@ def get_api_key_for_model(model_name: str, config: RunnableConfig):
             return os.getenv("ANTHROPIC_API_KEY")
         elif model_name.startswith("google"):
             return os.getenv("GOOGLE_API_KEY")
+        elif model_name.startswith("grok") or model_name.startswith("xai:"):
+            return os.getenv("XAI_API_KEY")
         return None
 
 def get_tavily_api_key(config: RunnableConfig):

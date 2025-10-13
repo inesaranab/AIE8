@@ -210,6 +210,26 @@ class Configuration(BaseModel):
             }
         }
     )
+    clarification_model: str = Field(
+        default="anthropic:claude-3-5-sonnet-20241022",
+        metadata={
+            "x_oap_ui_config": {
+                "type": "text",
+                "default": "anthropic:claude-3-5-sonnet-20241022",
+                "description": "Model for user clarification questions"
+            }
+        }
+    )
+    clarification_model_max_tokens: int = Field(
+        default=4096,
+        metadata={
+            "x_oap_ui_config": {
+                "type": "number",
+                "default": 4096,
+                "description": "Maximum output tokens for clarification model"
+            }
+        }
+    )
     # MCP server configuration
     mcp_config: Optional[MCPConfig] = Field(
         default=None,

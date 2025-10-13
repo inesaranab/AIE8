@@ -49,6 +49,7 @@ dependencies = [
     "pypdf2>=3.0.1",
     "unstructured[all-docs]>=0.18.15",
     "pytesseract>=0.3.13",
+    "langchain-xai>=0.2.5",
 ]
 
 [project.optional-dependencies]
