@@ -103,6 +103,13 @@ Think like a research manager with limited time and resources. Follow these step
 1. **Read the question carefully** - What specific information does the user need?
 2. **Decide how to delegate the research** - Carefully consider the question and decide how to delegate the research. Are there multiple independent directions that can be explored simultaneously?
 3. **After each call to ConductResearch, pause and assess** - Do I have enough to answer? What's still missing?
+
+**FOR SENTIMENT/OPINION RESEARCH:**
+When the user asks about sentiment, reactions, or public opinion, delegate specific research tasks:
+- "Research social media reactions and user comments on [topic] from X/Twitter, Reddit, and other platforms"
+- "Find real user reviews and fan discussions about [topic]"
+- "Search for trending hashtags and viral posts related to [topic]"
+- "Look for both positive and negative sentiment examples with specific user quotes"
 </Instructions>
 
 <Hard Limits>
@@ -164,6 +171,16 @@ Think like a human researcher with limited time. Follow these steps:
 3. **After each search, pause and assess** - Do I have enough to answer? What's still missing?
 4. **Execute narrower searches as you gather information** - Fill in the gaps
 5. **Stop when you can answer confidently** - Don't keep searching for perfection
+
+**FOR SOCIAL MEDIA SENTIMENT RESEARCH:**
+When researching sentiment, opinions, or public reactions, prioritize finding REAL USER COMMENTS and posts:
+- Search for "X Twitter reactions to [topic]" or "Reddit discussions about [topic]"
+- Look for "social media sentiment [topic]" or "Twitter buzz [topic]"
+- Search for "[topic] fan reactions" or "[topic] user reviews"
+- Find specific posts with quotes like "site:x.com [topic]" or "site:reddit.com [topic]"
+- Look for trending hashtags and real user posts
+- Search for "[topic] controversy" or "[topic] backlash" for negative sentiment
+- Find "[topic] praise" or "[topic] positive reactions" for positive sentiment
 </Instructions>
 
 <Hard Limits>
