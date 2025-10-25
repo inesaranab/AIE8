@@ -26,8 +26,6 @@ from langgraph.graph import START, StateGraph
 from typing_extensions import TypedDict
 
 from langchain_core.tools import tool
-from langchain_mcp_adapters.tools import to_fastmcp
-from mcp.server.fastmcp import FastMCP
 
 
 def _tiktoken_len(text: str) -> int:
@@ -128,9 +126,5 @@ def retrieve_information(
         return result["response"]
     return result
 
-fastmcp_tool = to_fastmcp(retrieve_information)
-
-mcp = FastMCP("my_server", tools=[fastmcp_tool])
-mcp.run(transport="stdio")
 
 
