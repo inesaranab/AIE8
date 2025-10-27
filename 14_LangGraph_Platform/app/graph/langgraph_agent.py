@@ -24,7 +24,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 async def make_graph():
     """Create a graph with MCP tools loaded asynchrounously"""
     client = MultiServerMCPClient({
-        "main-server": {
+        "14_LangGraph_Platform-server": {
             "url": "http://localhost:8001/mcp",
             "transport": "streamable_http",
         },
@@ -44,6 +44,24 @@ async def make_graph():
         
         model = _build_model_with_tools()
         messages = state["messages"]
+        
+        # Add system message to ensure sentiment classification is always used
+        system_message = """You are a helpful AI assistant. For EVERY user query, you MUST:
+
+1. First use the sentiment_classification tool to analyze the sentiment of the user's message
+2. Include the sentiment analysis result in your response to the user
+3. Acknowledge how the sentiment affects your approach to helping them
+
+For example, if the sentiment is negative, you might say: "I can see you're feeling frustrated about this issue. Let me help you find a solution..." 
+If positive: "I'm glad you're excited about this! Let me provide you with more information..."
+If neutral: "I understand you're looking for information about this topic. Let me help you with that..."
+
+After acknowledging the sentiment, you can then use other available tools to help answer the user's question. Always start with sentiment classification and include it in your response - this is mandatory for every interaction."""
+        
+        # Prepend system message if not already present
+        if not messages or not isinstance(messages[0], dict) or messages[0].get("role") != "system":
+            messages = [{"role": "system", "content": system_message}] + messages
+        
         response = model.invoke(messages)
         return {"messages": [response]}
     
@@ -76,8 +94,10 @@ A response is NOT helpful if it:
 - Gives up immediately without using available tools
 - Provides no useful information at all
 - Is completely unrelated to the user's question
+- Doesn't make an effort to help the user
 
 A response IS helpful if it:
+- Acknowledges the user's sentiment or emotional state (look for phrases like "I can see you're feeling...", "I understand your concern...", etc.)
 - Provides specific, actionable information
 - Directly answers the user's question
 - Offers useful guidance or steps
@@ -85,8 +105,9 @@ A response IS helpful if it:
 - Helps the user solve their problem
 - Makes an effort to find information using available tools
 - Provides context or related information even if not a complete answer
+- Shows empathy and understanding of the user's situation
 
-Consider that the model has access to tools for retrieving information. A response that makes an effort to use these tools should generally be considered helpful, even if it doesn't have the complete answer.
+The response should show that the agent understands the user's emotional context and provides appropriate help based on that understanding.
 
 Please indicate helpfulness with a 'Y' and unhelpfulness as an 'N'.
 

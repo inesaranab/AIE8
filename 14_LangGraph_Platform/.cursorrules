@@ -1,0 +1,107 @@
+# LangGraph + MCP Integration Cursor Rules
+
+## 🚨 Critical Issues and Fixes
+
+### 1. MCP Server Transport Issues
+- **NEVER use `transport="studio"`** - This is invalid and causes startup failures
+- **Use `transport="streamable-http"`** for HTTP-based MCP servers
+- **Use `transport="stdio"`** only for subprocess-based MCP servers
+- **Always specify port** when using HTTP transport: `mcp.run(transport="streamable-http", port=8000)`
+
+### 2. Async Tool Loading in LangGraph
+- **NEVER use `asyncio.run()` at module level** - This causes blocking call errors
+- **Always wrap MCP client in async function**: `async def make_graph():`
+- **Load tools asynchronously**: `tools = await client.get_tools()`
+- **Remove module-level `graph = make_graph().compile()`** - LangGraph Platform calls the function itself
+
+### 3. LangGraph Configuration
+- **Point to async functions in `langgraph.json`**: `"graph_id": "app.graphs.simple_agent:make_graph"`
+- **Both agents must use same pattern** - Inconsistent configs cause "Failed to fetch" errors
+- **Never call `.compile()` at module level** - Let LangGraph Platform handle compilation
+
+### 4. MCP Tool Output Validation
+- **All MCP tools MUST return strings** - Complex objects cause `ToolException`
+- **Format responses properly**: Convert dictionaries to readable strings
+- **Handle errors gracefully**: Return error messages as strings, not exceptions
+
+### 5. Import and Dependency Issues
+- **Avoid circular imports** - Don't import MCP adapters in RAG modules
+- **Use lazy imports** for heavy dependencies (Qdrant, embeddings)
+- **Remove unused imports** that cause module loading failures
+
+### 6. Multi-Server Architecture
+- **Each MCP server needs unique port** - Port conflicts cause connection failures
+- **Update agent configs** when changing server architecture
+- **Use `MultiServerMCPClient`** for connecting to multiple servers
+
+### 7. LangChain Tool Integration
+- **LangChain tools use `.invoke()` method** - Not direct function calls
+- **Pass parameters as dictionaries**: `tool.invoke({"param": "value"})`
+- **Regular functions call directly**: `function(param)`
+
+### 8. Git and Repository Management
+- **Use `git rm --cached`** to remove files from tracking while keeping locally
+- **Add to `.gitignore`** to prevent future tracking
+- **Use `git rm`** to completely remove files from repository
+
+## 🔧 Common Fixes
+
+### Fix Blocking Call Errors
+```python
+# ❌ Wrong - causes blocking call errors
+mcp.run(transport="stdio")
+
+# ✅ Correct - use HTTP transport
+mcp.run(transport="streamable-http", port=8000)
+```
+
+### Fix Async Loading
+```python
+# ❌ Wrong - blocking at module level
+tools = asyncio.run(client.get_tools())
+graph = make_graph().compile()
+
+# ✅ Correct - async function
+async def make_graph():
+    tools = await client.get_tools()
+    # ... build graph
+    return build_graph().compile()
+```
+
+### Fix Tool Output
+```python
+# ❌ Wrong - returns complex object
+return response  # Dictionary/object
+
+# ✅ Correct - returns string
+return f"Search results: {formatted_string}"
+```
+
+### Fix LangChain Tool Calls
+```python
+# ❌ Wrong - direct call on tool
+result = tool(param)
+
+# ✅ Correct - use .invoke()
+result = tool.invoke({"param": param})
+```
+
+## 🎯 Best Practices
+
+1. **Always test MCP servers independently** before integrating with LangGraph
+2. **Use HTTP transport** for better compatibility with LangGraph Platform
+3. **Format all tool outputs as strings** to avoid validation errors
+4. **Keep imports minimal** in RAG modules to avoid startup issues
+5. **Use consistent async patterns** across all agent configurations
+6. **Test each component separately** before full integration
+7. **Monitor terminal output** for connection and blocking call errors
+8. **Use proper error handling** in all MCP tools
+
+## 🚀 Success Indicators
+
+- MCP server starts without errors
+- LangGraph Studio shows both agents
+- No "Failed to fetch" errors
+- No blocking call warnings
+- All tools return string responses
+- Agents can successfully call MCP tools

@@ -4,19 +4,13 @@
     "env": ".env",
     "python_version": "3.13",
     "graphs": {
-        "langgraph_agent": "app/graph/langgraph_agent.py:make_graph",
-        "simple_agent": "app/graph/simple_agent.py:make_graph"
+        "langgraph_agent": "app/graph/langgraph_agent.py:make_graph"
     },
     "assistants": {
         "agent": {
             "graph_id": "langgraph_agent",
             "name": "LangGraph Agent",
             "description": "Agent that classifies sentiment, retrieves documents based on the sentiment and generates a final audio response."
-        },
-        "simple_agent": {
-            "graph_id": "simple_agent",
-            "name": "Simple Agent",
-            "description": "Simplified agent using ToolNode pattern for automatic tool execution."
         }
     }
 }

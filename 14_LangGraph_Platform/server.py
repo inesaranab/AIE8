@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 from tavily import TavilyClient
 import os
-from dice_roller import DiceRoller
 from huggingface_hub import InferenceClient
 
 #Usecase imports
@@ -10,7 +9,7 @@ from elevenlabs import ElevenLabs
 from app.rag import retrieve_information
 load_dotenv()
 
-mcp = FastMCP("main-server")
+mcp = FastMCP("14_LangGraph_Platform-server")
 client = TavilyClient(os.getenv("TAVILY_API_KEY"))
 client_elevenlabs = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
 client_huggingface = InferenceClient(
@@ -25,15 +24,6 @@ def web_search(query: str) -> str:
     search_results = client.search(query=query)
     return search_results
 
-@mcp.tool()
-def roll_dice(notation: str, num_rolls: int = 1) -> str:
-    """Roll the dice with the given notation"""
-    roller = DiceRoller(notation, num_rolls)
-    return str(roller)
-
-"""
-Add your own tool here, and then use it through Cursor!
-"""
 @mcp.tool()
 def text_to_speech(text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb") -> str:
     """Convert the given text into speech and save as MP3 file"""
