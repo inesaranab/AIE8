@@ -87,6 +87,41 @@ Do this by creating a Simple Agent that can make API calls to the 🤖Agent Node
 What are the core components of an `AgentCard`?
 
 ##### ✅ Answer:
+```python
+class AgentCard(
+    *,
+    additional_interfaces: list[AgentInterface] | None = None,
+    capabilities: AgentCapabilities,
+    default_input_modes: list[str],
+    default_output_modes: list[str],
+    description: str,
+    documentation_url: str | None = None,
+    icon_url: str | None = None,
+    name: str,
+    preferred_transport: str | None = 'JSONRPC',
+    protocol_version: str | None = '0.3.0',
+    provider: AgentProvider | None = None,
+    security: list[dict[str, list[str]]] | None = None,
+    security_schemes: dict[str, SecurityScheme] | None = None,
+    signatures: list[AgentCardSignature] | None = None,
+    skills: list[AgentSkill],
+    supports_authenticated_extended_card: bool | None = None,
+    url: str,
+    version: str
+)
+```
+1. **Basic Information**: Agent’s name (name), description (description), service URL (url), provider information (provider), version (version), documentation link (documentationUrl).
+2. **Capabilities**: Optional capabilities supported by the Agent, such as support for streaming (streaming), push notifications (pushNotifications), state transition history (stateTransitionHistory).
+3. **Authentication Requirements**: Authentication schemes required by the Agent (e.g., Basic, Bearer) and credential information.
+4. **Default Interaction Modes**: Default input (defaultInputModes) and output (defaultOutputModes) MIME types supported by the Agent across all skills.
+5. **Skills**: Specific capability units that the Agent can perform. Each skill includes:
+- Unique identifier (id)
+- Name (name)
+- Description (description)
+- Tags (tags)
+- Examples (examples)
+- Skill-specific input/output modes (inputModes/outputModes) (if different from default).
+
 
 <br />
 
@@ -94,7 +129,9 @@ What are the core components of an `AgentCard`?
 
 Why is A2A (and other such protocols) important in your own words?
 
+
 ##### ✅ Answer:
+A2A is an important framework because standardizes communication between AI Agents across different platforms, eliminating the need for writting custom code for each agent pairing. This lets organizations to build scalable multi-agent systems, where specialized agents can instantly work together and share information, regardless of who built them or what framework they used.
 
 <br /><br />
 
