@@ -25,7 +25,10 @@ logger = logging.getLogger(__name__)
 
 
 class GeneralAgentExecutor(AgentExecutor):
-    """General Purpose AgentExecutor with A2A Protocol Support."""
+    """General Purpose AgentExecutor with A2A Protocol Support.
+    Orchestrates request handling, task lifecycle, streaming updates, 
+    and error mapping between the HTTP layer and your LangGraph agent
+    """
 
     def __init__(self):
         self.agent = Agent()
@@ -40,7 +43,7 @@ class GeneralAgentExecutor(AgentExecutor):
             raise ServerError(error=InvalidParamsError())
 
         query = context.get_user_input()
-        task = context.current_task
+        task = context.current_task # all the information about the current request/interactions
         if not task:
             task = new_task(context.message)  # type: ignore
             await event_queue.enqueue_event(task)

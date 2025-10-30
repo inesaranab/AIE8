@@ -82,13 +82,13 @@ def main(host, port):
 
 
         # --8<-- [start:DefaultRequestHandler]
-        httpx_client = httpx.AsyncClient()
-        push_config_store = InMemoryPushNotificationConfigStore()
-        push_sender = BasePushNotificationSender(httpx_client=httpx_client,
+        httpx_client = httpx.AsyncClient() # http client for making web requests
+        push_config_store = InMemoryPushNotificationConfigStore() # store for push notifications
+        push_sender = BasePushNotificationSender(httpx_client=httpx_client, # sender for push notifications
                         config_store=push_config_store)
         request_handler = DefaultRequestHandler(
-            agent_executor=GeneralAgentExecutor(),
-            task_store=InMemoryTaskStore(),
+            agent_executor=GeneralAgentExecutor(), # agent executor for handling requests
+            task_store=InMemoryTaskStore(), # store for tasks
             push_config_store=push_config_store,
             push_sender= push_sender
         )

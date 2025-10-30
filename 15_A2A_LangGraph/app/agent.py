@@ -112,4 +112,4 @@ class Agent:
             ),
         }
 
-    SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
+    SUPPORTED_CONTENT_TYPES = ['text', 'text/plain'] #types accepted for input or produced as output
