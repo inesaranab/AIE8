@@ -90,7 +90,8 @@ def create_guardrails_guard(
             guard = guard.use(
                 GuardrailsPII(
                     entities=entities,
-                    on_fail="fix"
+                    on_fail="fix",
+                    use_local=False  # Use remote inference to avoid local model issues
                 )
             )
             logger.debug(f"PII protection guard configured for entities: {entities}")
@@ -159,44 +160,49 @@ def validate_input(
     raise_on_failure: bool = True
 ) -> Dict[str, Any]:
     """Validate user input using a Guardrails guard.
-    
+
     Args:
         guard: The Guard instance to use for validation.
         user_input: The user input to validate.
         raise_on_failure: Whether to raise an exception on validation failure.
             If False, returns validation result. Default: True.
-        
+
     Returns:
         Dictionary with validation results including:
         - validation_passed: Boolean indicating if validation passed
         - validated_output: The validated (and potentially modified) output
         - error: Error message if validation failed
-        
+
     Raises:
         RuntimeError: If validation fails and raise_on_failure is True.
     """
     try:
         result = guard.validate(user_input)
-        
+
         validation_result = {
             "validation_passed": result.validation_passed,
             "validated_output": result.validated_output if hasattr(result, 'validated_output') else user_input,
             "error": None
         }
-        
-        if not result.validation_passed and raise_on_failure:
-            error_msg = f"Input validation failed: {getattr(result, 'error', 'Unknown error')}"
+
+        if not result.validation_passed:
+            error_msg = f"Validation failed for field with errors: {getattr(result, 'error', 'Unknown error')}"
             logger.warning(f"Input validation failed: {user_input[:100]}...")
-            raise RuntimeError(error_msg)
-        
+
+            validation_result["error"] = error_msg
+
+            if raise_on_failure:
+                raise RuntimeError(error_msg)
+
         return validation_result
-        
+
     except RuntimeError:
         raise
     except Exception as e:
-        logger.error(f"Input validation error: {e}", exc_info=True)
+        # Log with less verbosity - only log the message, not full traceback
+        logger.error(f"Input validation error: {str(e)}")
         if raise_on_failure:
-            raise RuntimeError(f"Input validation failed: {e}") from e
+            raise RuntimeError(f"Validation failed for field with errors: {str(e)}") from e
         return {
             "validation_passed": False,
             "validated_output": user_input,
@@ -211,17 +217,17 @@ def validate_output(
     raise_on_failure: bool = True
 ) -> Dict[str, Any]:
     """Validate agent output using a Guardrails guard.
-    
+
     Args:
         guard: The Guard instance to use for validation.
         agent_response: The agent's response to validate.
         context: Optional context for factuality checking.
         raise_on_failure: Whether to raise an exception on validation failure.
             If False, returns validation result. Default: True.
-        
+
     Returns:
         Dictionary with validation results.
-        
+
     Raises:
         RuntimeError: If validation fails and raise_on_failure is True.
     """
@@ -231,26 +237,30 @@ def validate_output(
             result = guard.validate(agent_response, metadata={"context": context})
         else:
             result = guard.validate(agent_response)
-        
+
         validation_result = {
             "validation_passed": result.validation_passed,
             "validated_output": result.validated_output if hasattr(result, 'validated_output') else agent_response,
             "error": None
         }
-        
-        if not result.validation_passed and raise_on_failure:
-            error_msg = f"Output validation failed: {getattr(result, 'error', 'Unknown error')}"
+
+        if not result.validation_passed:
+            error_msg = f"Validation failed for field with errors: {getattr(result, 'error', 'Unknown error')}"
             logger.warning(f"Output validation failed: {agent_response[:100]}...")
-            raise RuntimeError(error_msg)
-        
+            validation_result["error"] = error_msg
+
+            if raise_on_failure:
+                raise RuntimeError(error_msg)
+
         return validation_result
-        
+
     except RuntimeError:
         raise
     except Exception as e:
-        logger.error(f"Output validation error: {e}", exc_info=True)
+        # Log with less verbosity
+        logger.error(f"Output validation error: {str(e)}")
         if raise_on_failure:
-            raise RuntimeError(f"Output validation failed: {e}") from e
+            raise RuntimeError(f"Validation failed for field with errors: {str(e)}") from e
         return {
             "validation_passed": False,
             "validated_output": agent_response,

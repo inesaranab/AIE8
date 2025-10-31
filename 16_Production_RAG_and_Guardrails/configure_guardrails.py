@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Workaround script for guardrails configure command.
-The guardrails CLI has a bug in version 0.5.14, so use this script instead.
+Configuration script for guardrails API key.
+Uses the official guardrails configure command with proper format.
 
 Usage:
     uv run python configure_guardrails.py [API_KEY]
@@ -13,6 +13,7 @@ Or set the API key via environment variable:
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 
 
@@ -25,8 +26,40 @@ def get_config_path() -> Path:
     return config_dir / "credentials.json"
 
 
-def configure_guardrails(api_key: str):
-    """Configure guardrails API key."""
+def configure_guardrails_with_cli(api_key: str):
+    """Configure guardrails API key using the official CLI command."""
+    try:
+        # Use the official guardrails configure command
+        # --disable-metrics avoids interactive prompt
+        result = subprocess.run(
+            [
+                sys.executable, "-m", "guardrails", "configure",
+                "--token", api_key,
+                "--disable-metrics",
+                "--disable-remote-inference"
+            ],
+            input="",  # Empty input for any prompts
+            text=True,
+            capture_output=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            print("✅ Guardrails API key configured successfully!")
+            print("   Using official guardrails configure command")
+            return True
+        else:
+            print("⚠️  Official command had issues, trying fallback method...")
+            print(f"   Error: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"⚠️  Official command failed: {e}")
+        print("   Trying fallback method...")
+        return False
+
+
+def configure_guardrails_fallback(api_key: str):
+    """Fallback: Configure guardrails API key by writing to config file."""
     import json
     
     config_path = get_config_path()
@@ -35,9 +68,11 @@ def configure_guardrails(api_key: str):
     with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
     
-    print(f"✅ Guardrails API key configured successfully!")
+    print(f"✅ Guardrails API key configured (fallback method)!")
     print(f"   Config saved to: {config_path}")
     print(f"   ⚠️  Keep your API key secret and do not commit it to git!")
+    print(f"\n   Note: If guards still fail to install, your token may be expired.")
+    print(f"   Get a new token from: https://hub.guardrailsai.com/keys")
 
 
 def main():
@@ -64,7 +99,9 @@ def main():
         print("  uv run python configure_guardrails.py")
         sys.exit(1)
     
-    configure_guardrails(api_key)
+    # Try official command first, fallback if it fails
+    if not configure_guardrails_with_cli(api_key):
+        configure_guardrails_fallback(api_key)
 
 
 if __name__ == "__main__":

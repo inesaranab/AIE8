@@ -60,7 +60,7 @@ def setup_llm_cache(cache_type: str = "memory", cache_path: Optional[str] = None
         cache_path: Path for SQLite cache file
     """
     if cache_type == "memory":
-        set_llm_cache(InMemoryCache())
+        set_llm_cache(InMemoryCache()) # langchain.llm_cache
     elif cache_type == "sqlite":
         db_path = cache_path or "./cache/llm_cache.db"
         os.makedirs(os.path.dirname(db_path), exist_ok=True)

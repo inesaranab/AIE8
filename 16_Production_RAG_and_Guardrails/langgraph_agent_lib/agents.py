@@ -6,6 +6,7 @@ import os
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -111,3 +112,110 @@ def create_langgraph_agent(
     graph.add_edge("action", "agent")
     
     return graph.compile()
+
+def create_helpfulness_agent(
+    model_name: str = "gpt-4",
+    temperature: float = 0.1,
+    tools: Optional[List] = None,
+    rag_chain: Optional[ProductionRAGChain] = None
+):
+    """Create a helpfulness agent."""
+    if tools is None:
+        tools = get_default_tools(rag_chain)
+
+    #Get model and bind tools
+    model = get_openai_model(model_name=model_name, temperature=temperature)
+    model_with_tools = model.bind_tools(tools)
+
+    def call_model(state: AgentState) -> Dict[str, Any]:
+        messages = state["messages"]
+        response = model_with_tools.invoke(messages)
+        return {"messages": [response]}
+    
+    def route_to_action_or_helpfulness(state: AgentState):
+        last_message = state["messages"][-1]
+        if getattr(last_message, "tool_calls", None):
+            return 'action'
+        return 'helpfulness'
+
+    def helpfulness_node(state: AgentState) -> Dict[str, Any]:
+        messages = state["messages"]
+
+        if len(messages) > 10:
+            return {"messages": [AIMessage(content="HELPFULNESS:END")]}
+
+        initial_query = state["messages"][0]
+        # Get the agent's final response (last AIMessage, not tool results)
+        final_response = None
+        for msg in reversed(state["messages"]):
+            if isinstance(msg, AIMessage) and not getattr(msg, "tool_calls", None):
+                final_response = msg
+                break
+        
+        if not final_response:
+            final_response = state["messages"][-1]
+
+        prompt_template = """Given an initial query and a final response, determine if the final response is extremely helpful or not. 
+        A helpful response should:
+        - Provide accurate and relevant information
+        - Be complete and address the user's specific need
+        - Use appropriate tools when necessary
+        
+        Please indicate helpfulness with a 'Y' and unhelpfulness as an 'N'.
+
+        Initial Query:
+        {initial_query}
+
+        Final Response:
+        {final_response}
+        """
+
+        helpfulness_prompt = ChatPromptTemplate.from_template(prompt_template)
+
+        helpfulness_chain = helpfulness_prompt | model | StrOutputParser()
+
+        helpfulness_response = helpfulness_chain.invoke({
+            "initial_query": initial_query.content, 
+            "final_response": final_response.content
+        })
+
+        decision = "Y" if "Y" in helpfulness_response else "N"
+        # Format decision to match the check in helpfulness_decision
+        return {"messages": [AIMessage(content=f"HELPFULNESS:{decision}")]}
+
+    def helpfulness_decision(state: AgentState):
+        if any(getattr(m, "content", "") == "HELPFULNESS:END" for m in state["messages"][-1:]):
+            return END
+            
+        last_message = state["messages"][-1]
+        if "HELPFULNESS:Y" in getattr(last_message, "content", ""):
+            return END
+        return "continue"
+
+   
+    graph = StateGraph(AgentState)
+    tool_node = ToolNode(tools)
+    graph.add_node("agent", call_model)
+    graph.add_node("action", tool_node)
+    graph.add_node("helpfulness", helpfulness_node)
+    graph.set_entry_point("agent")
+    graph.add_conditional_edges(
+        "agent",
+        route_to_action_or_helpfulness,
+        {"action": "action", "helpfulness": "helpfulness"}
+    )
+    graph.add_edge("action", "agent")  # Return to agent after tool execution
+    graph.add_conditional_edges(
+        "helpfulness",
+        helpfulness_decision,
+        {"continue": "agent", END: END}
+    )
+
+    return graph.compile()
+
+
+            
+
+
+
+
