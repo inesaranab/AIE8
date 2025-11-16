@@ -40,4 +40,5 @@ What is the difference between serverless and dedicated endpoints?
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+Serverless: you share compute with other users, pay-per-use. There is no setup time and it auto-scales. 
+Dedicated endpoint: reserved infrastructure, pay for uptime (charged for the time it's running, even if not used). The setup time is about 5-20 minutes to spin up. Guarantedd performance. If  you use a dedicated enpoint, ALWAYS set auto-shutdown to not waste credits.

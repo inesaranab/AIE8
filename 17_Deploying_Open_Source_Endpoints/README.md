@@ -6,9 +6,9 @@
 
 ## <h1 align="center" id="heading">Session 17: Deploying Open Source Endpoints</h1>
 
-| 📰 Session Sheet | ⏺️ Recording     | 🖼️ Slides        | 👨‍💻 Repo         | 📝 Homework      | 📁 Feedback       |
-|:-----------------|:-----------------|:-----------------|:-----------------|:-----------------|:-----------------|
-| [Session 17: Deploying Open-Source Endpoints](https://www.notion.so/Session-17-Deploying-Open-Source-Endpoints-26acd547af3d803c9ca1f809b2d24a15) |[Recording!](https://us02web.zoom.us/rec/share/5p0fdcNcY61A9W0CqkBgGDHZP4CFgaArrQuV5odXndLs6VnJXx_JaYnQyNeTo1Nv.lgKhnecFkff3okzf) (JF5JkZk@) | [Session 17 Slides](https://www.canva.com/design/DAG3xfshte8/05rU_he3VcR7dz4r_2ky2Q/edit?utm_content=DAG3xfshte8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) | You are here! | [Session 17 Assignment: Endpoints](https://forms.gle/8F3D6dSFMxzVdtsJ8) | [AIE8 Feedback 11/4](https://forms.gle/EnczDh7hbwud4qSp9)
+| 🤓 Pre-work | 📰 Session Sheet | ⏺️ Recording     | 🖼️ Slides        | 👨‍💻 Repo         | 📝 Homework      | 📁 Feedback       |
+|:-----------------|:-----------------|:-----------------|:-----------------|:-----------------|:-----------------|:-----------------|
+
 
 **⚠️!!! PLEASE BE SURE TO SHUTDOWN YOUR DEDICATED ENDPOINT ON TOGETHER AI WHEN YOU'RE FINISHED YOUR ASSIGNMENT !!!⚠️**
 

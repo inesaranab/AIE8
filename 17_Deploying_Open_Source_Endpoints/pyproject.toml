@@ -3,9 +3,35 @@ name = "17-deploying-open-source-endpoints"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
+    "arxiv>=2.3.1",
+    "datasets>=4.4.1",
+    "dotenv>=0.9.9",
+    "fastapi>=0.121.2",
+    "grpcio>=1.76.0",
+    "ipykernel>=6.30.1",
     "jupyter>=1.1.1",
+    "langchain>=0.3.0,<0.4.0",
+    "langchain-community>=0.3.0,<0.4.0",
+    "langchain-core>=0.3.29,<0.4.0",
+    "langchain-openai>=0.2.14",
+    "langchain-qdrant>=0.2.1",
+    "langchain-together>=0.3.0",
+    "langgraph>=0.2.0",
+    "matplotlib>=3.10.7",
     "openai>=1.100.2",
+    "pandas>=2.3.3",
+    "protobuf>=6.33.1",
+    "pydantic>=2.11.7",
+    "pymupdf>=1.25.4",
+    "python-dateutil>=2.9.0.post0",
+    "python-dotenv>=1.2.1",
+    "qdrant-client>=1.14.2",
+    "ragas>=0.3.9",
+    "rapidfuzz>=3.14.3",
+    "requests>=2.32.3",
+    "tiktoken>=0.12.0",
     "together>=1.5.25",
+    "uvicorn>=0.32.1",
 ]
